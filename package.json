@@ -3,7 +3,17 @@
   "version": "0.0.0",
   "description": "Emulates CSS conditions like print, prefers-reduced-motion, etc.",
   "keywords": [
-    "storybook-addons", "media", "conditions", "css", "emulate", "emulation", "type", "print", "screen", "prefers-reduced-motion", "storybook-addons"
+    "storybook-addons",
+    "media",
+    "conditions",
+    "css",
+    "emulate",
+    "emulation",
+    "type",
+    "print",
+    "screen",
+    "prefers-reduced-motion",
+    "storybook-addons"
   ],
   "repository": {
     "type": "git",
@@ -82,7 +92,15 @@
   "storybook": {
     "displayName": "Emulate CSS Conditions",
     "supportedFrameworks": [
-      "react", "vue", "angular", "web-components", "ember", "html", "svelte", "preact", "react-native"
+      "react",
+      "vue",
+      "angular",
+      "web-components",
+      "ember",
+      "html",
+      "svelte",
+      "preact",
+      "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/321738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
   }
