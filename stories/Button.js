@@ -5,16 +5,25 @@ import "./button.css";
 /**
  * Primary UI component for user interaction
  */
-export const Button = ({ primary, backgroundColor, size, label, ...props }) => {
+export const Button = ({
+  primary,
+  backgroundColor,
+  type,
+  size,
+  variant,
+  label,
+  ...props
+}) => {
   const mode = primary
     ? "storybook-button--primary"
     : "storybook-button--secondary";
+  const className = ["storybook-button", `storybook-button--${size}`, mode];
+  if (variant && variant !== "none")
+    className.push(`storybook-button--${variant}`);
   return (
     <button
       type="button"
-      className={["storybook-button", `storybook-button--${size}`, mode].join(
-        " "
-      )}
+      className={className.join(" ")}
       style={backgroundColor && { backgroundColor }}
       {...props}
     >
@@ -37,6 +46,10 @@ Button.propTypes = {
    */
   size: PropTypes.oneOf(["small", "medium", "large"]),
   /**
+   * Additional variants
+   */
+  variant: PropTypes.oneOf(["none", "pulsing"]),
+  /**
    * Button contents
    */
   label: PropTypes.string.isRequired,
@@ -51,4 +64,5 @@ Button.defaultProps = {
   primary: false,
   size: "medium",
   onClick: undefined,
+  variant: "none",
 };
