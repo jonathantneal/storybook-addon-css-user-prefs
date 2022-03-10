@@ -1,31 +1,55 @@
-import React, { useCallback } from "react";
+import React, { Fragment, useCallback } from "react";
 import { useGlobals } from "@storybook/api";
-import { Icons, IconButton } from "@storybook/components";
-import { TOOL_ID } from "./constants";
+import {
+  Icons,
+  IconButton,
+  WithTooltip,
+  TooltipLinkList,
+} from "@storybook/components";
+import { TOOL_ID, PARAM_KEY, OPTIONS } from "./constants";
+import { getParams } from "./getParams";
+
+const createLinks = (params: any) => {
+  console.log({ params });
+};
 
 export const Tool = () => {
-  const [{ myAddon }, updateGlobals] = useGlobals();
+  const [globals, updateGlobals] = useGlobals();
+
+  const params = getParams(globals);
 
   const toggleMyTool = useCallback(
-    () =>
+    (id: string) =>
       updateGlobals({
-        myAddon: myAddon ? undefined : true,
+        [PARAM_KEY]: { ...globals[PARAM_KEY], [id]: !globals[PARAM_KEY][id] },
       }),
-    [myAddon]
+    Object.values(params)
   );
 
+  const createLinks = (onHide: () => void) =>
+    Object.entries(OPTIONS).map(([id, title]) => ({
+      id,
+      title,
+      onClick() {
+        onHide();
+        toggleMyTool(id);
+      },
+    }));
+
   return (
-    <IconButton
-      key={TOOL_ID}
-      active={myAddon}
-      title="Enable my addon"
-      onClick={toggleMyTool}
+    <WithTooltip
+      placement="top"
+      trigger="click"
+      closeOnClick
+      tooltip={({ onHide }) => <TooltipLinkList links={createLinks(onHide)} />}
     >
-      {/*
-        Checkout https://next--storybookjs.netlify.app/official-storybook/?path=/story/basics-icon--labels
-        for the full list of icons
-      */}
-      <Icons icon="lightning" />
-    </IconButton>
+      <IconButton
+        key={TOOL_ID}
+        active={params.isActive}
+        title="Enable my addon"
+      >
+        <Icons icon="lightning" />
+      </IconButton>
+    </WithTooltip>
   );
 };

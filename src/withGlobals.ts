@@ -1,44 +1,48 @@
-import { StoryFn as StoryFunction, StoryContext } from "@storybook/addons";
+import { StoryContext } from "@storybook/addons";
 import { useEffect, useGlobals } from "@storybook/addons";
+import { getParams, Params } from "./getParams";
 
-export const withGlobals = (StoryFn: StoryFunction, context: StoryContext) => {
-  const [{ myAddon }] = useGlobals();
-  // Is the addon being used in the docs panel
-  const isInDocs = context.viewMode === "docs";
+export const withGlobals = (storyFn: Function, context: StoryContext) => {
+  const [globals, updateGlobals] = useGlobals();
+  const params = getParams(globals);
 
   useEffect(() => {
-    // Execute your side effect here
-    // For example, to manipulate the contents of the preview
-    const selectorId = isInDocs
-      ? `#anchor--${context.id} .docs-story`
-      : `#root`;
+    console.log("params");
+    console.log(params);
+    processCSS(document.styleSheets, params);
+  }, Object.values(params));
 
-    displayToolState(selectorId, {
-      myAddon,
-      isInDocs,
-    });
-  }, [myAddon]);
-
-  return StoryFn();
+  return storyFn();
 };
 
-function displayToolState(selector: string, state: any) {
-  const rootElement = document.querySelector(selector);
-  let preElement = rootElement.querySelector("pre");
+const matches = {
+  prefersReducedMotion: [/\(prefers-reduced-motion(: no-preference)?\)/, "all"],
+} as Record<keyof Params, [RegExp, string]>;
 
-  if (!preElement) {
-    preElement = document.createElement("pre");
-    preElement.style.setProperty("margin-top", "2rem");
-    preElement.style.setProperty("padding", "1rem");
-    preElement.style.setProperty("background-color", "#eee");
-    preElement.style.setProperty("border-radius", "3px");
-    preElement.style.setProperty("max-width", "600px");
-    rootElement.appendChild(preElement);
+const cache = new WeakMap<CSSRule, { conditionText: string }>();
+
+function processCSS(containers: ArrayLike<CSSContainer>, params: Params) {
+  for (const target of containers as CSSContainer[]) {
+    if (target instanceof CSSMediaRule) {
+      const state =
+        cache.get(target) ||
+        cache.set(target, { conditionText: target.conditionText }).get(target);
+      let { conditionText } = state;
+      for (const param in params) {
+        if (param in matches) {
+          const [match, replacer] = matches[param as keyof typeof matches];
+          if (params[param as keyof typeof params]) {
+            conditionText = conditionText.replace(match, replacer);
+          }
+        }
+      }
+      if (conditionText !== target.conditionText) {
+        target.media.mediaText = conditionText;
+      }
+    } else if ("cssRules" in target) {
+      processCSS(target.cssRules, params);
+    }
   }
-
-  preElement.innerText = `This snippet is injected by the withGlobals decorator.
-It updates as the user interacts with the ⚡ tool in the toolbar above.
-
-${JSON.stringify(state, null, 2)}
-`;
 }
+
+type CSSContainer = CSSStyleSheet | CSSMediaRule | CSSRule;

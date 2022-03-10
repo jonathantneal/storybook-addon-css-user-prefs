@@ -9,3 +9,7 @@ export const EVENTS = {
   REQUEST: `${ADDON_ID}/request`,
   CLEAR: `${ADDON_ID}/clear`,
 };
+
+export const OPTIONS = {
+  prefersReducedMotion: "Emulate CSS prefers-reduced-motion: reduce",
+};
