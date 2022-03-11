@@ -1,3 +1,15 @@
+# v0.0.2 (Fri Mar 11 2022)
+
+#### ⚠️ Pushed to `main`
+
+- update github ref ([@jonathantneal](https://github.com/jonathantneal))
+
+#### Authors: 1
+
+- Jonathan Neal ([@jonathantneal](https://github.com/jonathantneal))
+
+---
+
 # v0.0.1 (Fri Mar 11 2022)
 
 #### ⚠️ Pushed to `main`
