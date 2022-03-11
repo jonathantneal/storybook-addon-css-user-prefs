@@ -23,7 +23,7 @@
     "user",
     "storybook-addons"
   ],
-  "repository": "https://github.com/jonathantneal/storybook-addon-css-users-prefs",
+  "repository": "https://github.com/jonathantneal/storybook-addon-css-user-prefs",
   "author": "Jonathan Neal <jonathantneal@hotmail.com>",
   "license": "CC0-1.0",
   "main": "dist/cjs/index.js",
