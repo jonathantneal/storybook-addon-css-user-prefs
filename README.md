@@ -1,92 +1,133 @@
-# Storybook Addon Emulate CSS Conditions
-Emulates CSS conditions like print, prefers-reduced-motion, etc.
+# Storybook Addon: CSS User Preferences
 
-### Development scripts
+This toolbar addon allows you to emulate CSS user preferences in Storybook.
 
-- `yarn start` runs babel in watch mode and starts Storybook
-- `yarn build` build and package your addon code
+<p align="center"><img src="/src/screenshot.webp" width="50%" /></p>
 
-### Switch from TypeScript to JavaScript
+## Getting started
 
-Don't want to use TypeScript? We offer a handy eject command: `yarn eject-ts`
-
-This will convert all code to JS. It is a destructive process, so we recommended running this before you start writing any code.
-
-## What's included?
-
-![Demo](https://user-images.githubusercontent.com/42671/107857205-e7044380-6dfa-11eb-8718-ad02e3ba1a3f.gif)
-
-The addon code lives in `src`. It demonstrates all core addon related concepts. The three [UI paradigms](https://storybook.js.org/docs/react/addons/addon-types#ui-based-addons)
-
-- `src/Tool.js`
-- `src/Panel.js`
-- `src/Tab.js`
-
-Which, along with the addon itself, are registered in `src/preset/manager.js`.
-
-Managing State and interacting with a story:
-
-- `src/withGlobals.js` & `src/Tool.js` demonstrates how to use `useGlobals` to manage global state and modify the contents of a Story.
-- `src/withRoundTrip.js` & `src/Panel.js` demonstrates two-way communication using channels.
-- `src/Tab.js` demonstrates how to use `useParameter` to access the current story's parameters.
-
-Your addon might use one or more of these patterns. Feel free to delete unused code. Update `src/preset/manager.js` and `src/preset/preview.js` accordingly.
-
-Lastly, configure you addon name in `src/constants.js`.
-
-### Metadata
-
-Storybook addons are listed in the [catalog](https://storybook.js.org/addons) and distributed via npm. The catalog is populated by querying npm's registry for Storybook-specific metadata in `package.json`. This project has been configured with sample data. Learn more about available options in the [Addon metadata docs](https://storybook.js.org/docs/react/addons/addon-catalog#addon-metadata).
-
-## Release Management
-
-### Setup
-
-This project is configured to use [auto](https://github.com/intuit/auto) for release management. It generates a changelog and pushes it to both GitHub and npm. Therefore, you need to configure access to both:
-
-- [`NPM_TOKEN`](https://docs.npmjs.com/creating-and-viewing-access-tokens#creating-access-tokens) Create a token with both _Read and Publish_ permissions.
-- [`GH_TOKEN`](https://github.com/settings/tokens) Create a token with the `repo` scope.
-
-Then open your `package.json` and edit the following fields:
-
-- `name`
-- `author`
-- `repository`
-
-#### Local
-
-To use `auto` locally create a `.env` file at the root of your project and add your tokens to it:
-
-```bash
-GH_TOKEN=<value you just got from GitHub>
-NPM_TOKEN=<value you just got from npm>
-```
-
-Lastly, **create labels on GitHub**. You’ll use these labels in the future when making changes to the package.
-
-```bash
-npx auto create-labels
-```
-
-If you check on GitHub, you’ll now see a set of labels that `auto` would like you to use. Use these to tag future pull requests.
-
-#### GitHub Actions
-
-This template comes with GitHub actions already set up to publish your addon anytime someone pushes to your repository.
-
-Go to `Settings > Secrets`, click `New repository secret`, and add your `NPM_TOKEN`.
-
-### Creating a release
-
-To create a release locally you can run the following command, otherwise the GitHub action will make the release for you.
+First, install the addon.
 
 ```sh
-yarn release
+$ yarn add storybook-addon-css-user-preferences --dev
 ```
 
-That will:
+Add this line to your `main.js` file (create this file inside your Storybook config directory if needed).
 
-- Build and package the addon code
-- Bump the version
-- Push a release to GitHub and npm
-- Push a changelog to GitHub
+```js
+module.exports = {
+  addons: ['storybook-addon-css-user-preferences'],
+};
+```
+
+## Configuration
+
+By default, all CSS user preferences are set to the system default.
+
+You can configure your own set of user preferences with the `parameters.cssUserPrefs` parameter:
+
+```js
+// .storybook/preview.js
+
+export const parameters = {
+  cssUserPrefs: {
+    "prefers-color-scheme": "light",
+  },
+};
+```
+
+## Options
+
+### prefers-color-scheme
+
+The `prefers-color-scheme` preference is used to detect if the user has requested a light or dark color theme.
+
+```css
+@media (prefers-color-scheme: dark) {
+  .button {
+    background: #333;
+    color:      #fff;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .button {
+    background: #fff;
+    color:      #555;
+  }
+}
+```
+
+[![W3C Specification](https://img.shields.io/badge/Spec-005A9C?logo=w3c&amp;style=flat-square)](https://www.w3.org/TR/mediaqueries-5/#prefers-color-scheme) [![MDN Documentation](https://shields.io/badge/docs-black?logo=mozilla&amp;style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme)
+
+### prefers-contrast
+
+The `prefers-contrast` preference is used to detect if the user has requested that the web content is presented with a higher or lower contrast.
+
+```css
+.outline {
+  outline: 2px dashed black;
+}
+
+@media (prefers-contrast: more) {
+  .outline {
+    outline: 2px solid black;
+  }
+}
+```
+
+[![W3C Specification](https://img.shields.io/badge/Spec-005A9C?logo=w3c&amp;style=flat-square)](https://www.w3.org/TR/mediaqueries-5/#prefers-contrast) [![MDN Documentation](https://shields.io/badge/docs-black?logo=mozilla&amp;style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast)
+
+### prefers-reduced-data
+
+The `prefers-reduced-data` preference is used to detect if the user has requested the web content that consumes less internet traffic.
+
+```css
+.hero {
+  background-image: url("images/hero.webp");
+}
+
+@media (prefers-reduced-data: reduce) {
+  .image {
+    background-image: url("images/hero@reduced.webp");
+  }
+}
+```
+
+[![W3C Specification](https://img.shields.io/badge/Spec-005A9C?logo=w3c&amp;style=flat-square)](https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-data) [![MDN Documentation](https://shields.io/badge/docs-black?logo=mozilla&amp;style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-data)
+
+### prefers-reduced-motion
+
+The `prefers-reduced-motion` preference is used to detect if the user has requested that the system minimize the amount of non-essential motion it uses.
+
+```css
+.button {
+  animation: pulse 1s linear infinite both;
+}
+
+@media (prefers-reduced-motion) {
+  .button {
+    animation: none;
+  }
+}
+```
+
+[![W3C Specification](https://img.shields.io/badge/Spec-005A9C?logo=w3c&amp;style=flat-square)](https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-motion) [![MDN Documentation](https://shields.io/badge/docs-black?logo=mozilla&amp;style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
+
+### prefers-reduced-transparency
+
+The `prefers-reduced-transparency` preference is used to detect if the user has requested the system minimize the amount of transparent or translucent layer effects it uses.
+
+```css
+.glass {
+  opacity: 0.5; 
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    opacity: 1;
+  }
+}
+```
+
+[![W3C Specification](https://img.shields.io/badge/Spec-005A9C?logo=w3c&amp;style=flat-square)](https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-transparency)

@@ -13,6 +13,13 @@
   background-color: #1ea7fd;
 }
 
+@media (prefers-color-scheme: dark) {
+  .storybook-button--primary {
+    color: black;
+    background-color: #e15802;
+  }
+}
+
 .storybook-button--secondary {
   color: #333;
   background-color: transparent;

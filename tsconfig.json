@@ -13,7 +13,8 @@
     "noImplicitAny": true,
     "rootDir": "./src",
     "skipLibCheck": true,
-    "target": "es5"
+    "strictNullChecks": true,
+    "target": "esnext"
   },
   "include": [
     "src/**/*"

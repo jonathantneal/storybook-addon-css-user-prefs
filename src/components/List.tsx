@@ -1,95 +1,118 @@
-import React, { Fragment, useState } from "react";
-import { styled, themes, convert } from "@storybook/theming";
-import { Icons, IconsProps } from "@storybook/components";
+import React, { FunctionComponent, ReactNode, ComponentProps } from "react";
+import { styled } from "@storybook/theming";
+import { transparentize } from "polished";
 
-const ListWrapper = styled.ul({
-  listStyle: "none",
-  fontSize: 14,
-  padding: 0,
-  margin: 0,
-});
+export interface TitleProps {}
 
-const Wrapper = styled.div({
-  display: "flex",
-  width: "100%",
-  borderBottom: `1px solid ${convert(themes.normal).appBorderColor}`,
-  "&:hover": {
-    background: convert(themes.normal).background.hoverable,
-  },
-});
-
-const Icon = styled(Icons)<IconsProps>({
-  height: 10,
-  width: 10,
-  minWidth: 10,
-  color: convert(themes.normal).color.mediumdark,
-  marginRight: 10,
-  transition: "transform 0.1s ease-in-out",
-  alignSelf: "center",
-  display: "inline-flex",
-});
-
-const HeaderBar = styled.div({
-  padding: convert(themes.normal).layoutMargin,
-  paddingLeft: convert(themes.normal).layoutMargin - 3,
-  background: "none",
-  color: "inherit",
-  textAlign: "left",
-  cursor: "pointer",
-  borderLeft: "3px solid transparent",
-  width: "100%",
-
-  "&:focus": {
-    outline: "0 none",
-    borderLeft: `3px solid ${convert(themes.normal).color.secondary}`,
-  },
-});
-
-const Description = styled.div({
-  padding: convert(themes.normal).layoutMargin,
-  marginBottom: convert(themes.normal).layoutMargin,
-  fontStyle: "italic",
-});
-
-type Item = {
-  title: string;
-  description: string;
-};
-
-interface ListItemProps {
-  item: Item;
-}
-
-export const ListItem: React.FC<ListItemProps> = ({ item }) => {
-  const [open, onToggle] = useState(false);
-
-  return (
-    <Fragment>
-      <Wrapper>
-        <HeaderBar onClick={() => onToggle(!open)} role="button">
-          <Icon
-            icon="chevrondown"
-            color={convert(themes.normal).appBorderColor}
-            style={{
-              transform: `rotate(${open ? 0 : -90}deg)`,
-            }}
-          />
-          {item.title}
-        </HeaderBar>
-      </Wrapper>
-      {open ? <Description>{item.description}</Description> : null}
-    </Fragment>
-  );
-};
-
-interface ListProps {
-  items: Item[];
-}
-
-export const List: React.FC<ListProps> = ({ items }) => (
-  <ListWrapper>
-    {items.map((item, idx) => (
-      <ListItem key={idx} item={item}></ListItem>
-    ))}
-  </ListWrapper>
+const Title = styled((props: TitleProps) => <span {...props} />)<TitleProps>(
+  ({ theme }) => ({
+    color: theme.color.defaultText,
+    fontWeight: theme.typography.weight.regular,
+  })
 );
+
+export interface RightProps {}
+
+const Right = styled.span<RightProps>(
+  {
+    "& svg": {
+      transition: "all 200ms ease-out",
+      opacity: 0,
+      height: 12,
+      width: 12,
+      margin: "3px 0",
+      verticalAlign: "top",
+    },
+    "& path": {
+      fill: "inherit",
+    },
+  },
+  () => ({})
+);
+
+const Center = styled.span({
+  flex: 1,
+  textAlign: "left",
+  display: "inline-flex",
+
+  "& > * + *": {
+    paddingLeft: 10,
+  },
+});
+
+export interface CenterTextProps {}
+
+const CenterText = styled.span<CenterTextProps>({
+  flex: 1,
+  textAlign: "center",
+});
+
+export interface LeftProps {}
+
+const Left = styled.span<LeftProps>(({ theme }) => ({}));
+
+export interface ItemProps {}
+
+const Item = styled.div<ItemProps>(({ theme }) => ({
+  alignItems: "center",
+  color: transparentize(0.5, theme.color.defaultText),
+  cursor: 'default',
+  display: "flex",
+  fontSize: theme.typography.size.s1,
+  justifyContent: "space-between",
+  lineHeight: "18px",
+  padding: "7px 15px",
+  textDecoration: "none",
+  transition: "all 150ms ease-out",
+
+  "& > * + *": {
+    paddingLeft: 10,
+  },
+
+  "&:hover": {
+    background: theme.background.hoverable,
+  },
+
+  "&:hover svg": {
+    opacity: 1,
+  },
+}));
+
+export interface ListItemProps
+  extends Omit<ComponentProps<typeof Item>, "title"> {
+  loading?: boolean;
+  left?: ReactNode;
+  title?: ReactNode;
+  center?: ReactNode;
+  right?: ReactNode;
+}
+
+const ListItem: FunctionComponent<ListItemProps> = ({
+  loading,
+  left,
+  title,
+  center,
+  right,
+  ...rest
+}) => (
+  <Item {...rest}>
+    {left && <Left>{left}</Left>}
+    {title || center ? (
+      <Center>
+        {title && <Title>{title}</Title>}
+        {center && <CenterText>{center}</CenterText>}
+      </Center>
+    ) : null}
+    {right && <Right>{right}</Right>}
+  </Item>
+);
+
+ListItem.defaultProps = {
+  loading: false,
+  left: null,
+  title: <span>Loading state</span>,
+  center: null,
+  right: null,
+};
+
+export default ListItem;

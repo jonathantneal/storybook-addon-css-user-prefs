@@ -1,29 +1,36 @@
 {
-  "name": "storybook-addon-media-conditions",
+  "name": "storybook-addon-css-user-preferences",
   "version": "0.0.0",
-  "description": "Emulates CSS conditions like print, prefers-reduced-motion, etc.",
+  "description": "Emulates CSS user preferences in Storybook",
   "keywords": [
     "storybook-addons",
-    "media",
     "conditions",
     "css",
     "emulate",
     "emulation",
-    "type",
-    "print",
-    "screen",
+    "media",
+    "preferences",
+    "prefers-color-scheme",
+    "prefers-contrast",
+    "prefers-reduced-data",
     "prefers-reduced-motion",
+    "prefers-reduced-transparency",
+    "prefs",
+    "user",
     "storybook-addons"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jonathantneal/wip-addon"
-  },
+  "repository": "https://github.com/jonathantneal/wip-addon",
   "author": "Jonathan Neal <jonathantneal@hotmail.com>",
-  "license": "MIT",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "license": "CC0-1.0",
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.mjs",
   "types": "dist/ts/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
   "files": [
     "dist/**/*",
     "README.md",
@@ -34,8 +41,8 @@
     "postinstall": "node scripts/welcome.js",
     "clean": "rimraf ./dist",
     "buildBabel": "concurrently \"yarn buildBabel:cjs\" \"yarn buildBabel:esm\"",
-    "buildBabel:cjs": "babel ./src -d ./dist/cjs --extensions \".js,.jsx,.ts,.tsx\"",
-    "buildBabel:esm": "babel ./src -d ./dist/esm --env-name esm --extensions \".js,.jsx,.ts,.tsx\"",
+    "buildBabel:cjs": "babel ./src -d ./dist/cjs --extensions \".js,.jsx,.ts,.tsx\" --out-file-extension .cjs",
+    "buildBabel:esm": "babel ./src -d ./dist/esm --env-name esm --extensions \".js,.jsx,.ts,.tsx\" --out-file-extension .mjs",
     "buildTsc": "tsc --declaration --emitDeclarationOnly --outDir ./dist/ts",
     "prebuild": "yarn clean",
     "build": "concurrently \"yarn buildBabel\" \"yarn buildTsc\"",
@@ -90,7 +97,7 @@
     "access": "public"
   },
   "storybook": {
-    "displayName": "Emulate CSS Conditions",
+    "displayName": "Emulates CSS user preferences in Storybook",
     "supportedFrameworks": [
       "react",
       "vue",

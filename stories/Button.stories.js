@@ -7,32 +7,64 @@ export default {
   args: {
     label: "Button",
     primary: false,
-    variant: "none",
-  },
-  parameters: {
-    myAddonParameter: `
-<MyComponent boolProp scalarProp={1} complexProp={{ foo: 1, bar: '2' }}>
-  <SomeOtherComponent funcProp={(a) => a.id} />
-</MyComponent>
-`,
+    variant: "pulsing",
   },
 };
+
+const createTemplate = (defaults) =>
+  Object.assign((props) => <Button {...props} />, defaults);
 
 const Template = (args) => <Button {...args} />;
 
-export const Large = Template.bind({});
-Large.args = {
-  size: "large",
-};
+export const Primary = createTemplate({
+  args: {
+    primary: true,
+  },
+});
 
-export const Primary = Template.bind({});
-Primary.args = {
-  primary: true,
-};
+export const PrimaryLightMode = createTemplate({
+  args: {
+    primary: true,
+  },
+  parameters: {
+    cssUserPrefs: {
+      "prefers-color-scheme": "light",
+    },
+  },
+});
 
-export const Secondary = Template.bind({});
+export const PrimaryDarkMode = createTemplate({
+  args: {
+    primary: true,
+  },
+  parameters: {
+    cssUserPrefs: {
+      "prefers-color-scheme": "dark",
+    },
+  },
+});
 
-export const Small = Template.bind({});
-Small.args = {
-  size: "small",
-};
+export const PrimaryReducedMotion = createTemplate({
+  args: {
+    primary: true,
+  },
+  parameters: {
+    cssUserPrefs: {
+      "prefers-reduced-motion": "reduce",
+    },
+  },
+});
+
+export const Large = createTemplate({
+  args: {
+    size: "large",
+  },
+});
+
+export const Secondary = createTemplate({});
+
+export const Small = createTemplate({
+  args: {
+    size: "small",
+  },
+});

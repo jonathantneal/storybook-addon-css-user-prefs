@@ -1,48 +1,34 @@
-import { StoryContext } from "@storybook/addons";
-import { useEffect, useGlobals } from "@storybook/addons";
-import { getParams, Params } from "./getParams";
+import type { DecoratorFunction } from "@storybook/addons";
+import type {
+  AnyFramework,
+  PartialStoryFn,
+  StoryContext,
+} from "@storybook/csf";
+import { PARAM_KEY } from "./constants";
+import { processCSS } from "./processCSS";
+import { useEffect, useGlobals as useAddonGlobals } from "@storybook/addons";
+import { Globals, useGlobals } from "./useGlobals";
 
-export const withGlobals = (storyFn: Function, context: StoryContext) => {
-  const [globals, updateGlobals] = useGlobals();
-  const params = getParams(globals);
+export const withGlobals: DecoratorFunction<void> = (
+  storyFn: PartialStoryFn<AnyFramework>,
+  context: StoryContext<AnyFramework>
+) => {
+  const [globals, updateGlobals] = useGlobals(useAddonGlobals);
 
+  // apply user parameter overrides
+  const overrides = Object.assign({}, context.parameters[PARAM_KEY]) as Globals
+  let feature: keyof Globals;
+  for (feature in overrides) {
+    if (globals[feature] === undefined && overrides[feature] !== undefined) {
+      updateGlobals(overrides)
+      break
+    }
+  }
+
+  // transform css
   useEffect(() => {
-    console.log("params");
-    console.log(params);
-    processCSS(document.styleSheets, params);
-  }, Object.values(params));
+    processCSS(document.styleSheets, globals);
+  }, Object.values(globals));
 
   return storyFn();
 };
-
-const matches = {
-  prefersReducedMotion: [/\(prefers-reduced-motion(: no-preference)?\)/, "all"],
-} as Record<keyof Params, [RegExp, string]>;
-
-const cache = new WeakMap<CSSRule, { conditionText: string }>();
-
-function processCSS(containers: ArrayLike<CSSContainer>, params: Params) {
-  for (const target of containers as CSSContainer[]) {
-    if (target instanceof CSSMediaRule) {
-      const state =
-        cache.get(target) ||
-        cache.set(target, { conditionText: target.conditionText }).get(target);
-      let { conditionText } = state;
-      for (const param in params) {
-        if (param in matches) {
-          const [match, replacer] = matches[param as keyof typeof matches];
-          if (params[param as keyof typeof params]) {
-            conditionText = conditionText.replace(match, replacer);
-          }
-        }
-      }
-      if (conditionText !== target.conditionText) {
-        target.media.mediaText = conditionText;
-      }
-    } else if ("cssRules" in target) {
-      processCSS(target.cssRules, params);
-    }
-  }
-}
-
-type CSSContainer = CSSStyleSheet | CSSMediaRule | CSSRule;

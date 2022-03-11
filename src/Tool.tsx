@@ -1,54 +1,53 @@
-import React, { Fragment, useCallback } from "react";
-import { useGlobals } from "@storybook/api";
-import {
-  Icons,
-  IconButton,
-  WithTooltip,
-  TooltipLinkList,
-} from "@storybook/components";
-import { TOOL_ID, PARAM_KEY, OPTIONS } from "./constants";
-import { getParams } from "./getParams";
+import type { WithHideFn } from "./types";
+import type { Globals } from "./useGlobals";
 
-const createLinks = (params: any) => {
-  console.log({ params });
-};
+import React, { useCallback } from "react";
+import { useGlobals } from "./useGlobals";
+import { IconButton, WithTooltip } from "@storybook/components";
+import { TOOL_ID } from "./constants";
+import * as options from "./options";
+import { TooltipList } from "./components/TooltipList";
+import { Icon } from "./components/Icon";
 
 export const Tool = () => {
   const [globals, updateGlobals] = useGlobals();
 
-  const params = getParams(globals);
-
-  const toggleMyTool = useCallback(
-    (id: string) =>
+  const toggle = useCallback(
+    (id: keyof Globals, value: Globals[typeof id]) =>
       updateGlobals({
-        [PARAM_KEY]: { ...globals[PARAM_KEY], [id]: !globals[PARAM_KEY][id] },
+        [id]: value ? value : undefined,
       }),
-    Object.values(params)
+    Object.values(globals)
   );
 
-  const createLinks = (onHide: () => void) =>
-    Object.entries(OPTIONS).map(([id, title]) => ({
+  const createItems = ({ onHide }: WithHideFn) =>
+    options.keys.map((id) => ({
       id,
-      title,
-      onClick() {
-        onHide();
-        toggleMyTool(id);
-      },
+      title: id,
+      right: (
+        <select
+          defaultValue={globals[id]}
+          onChange={(event) => {
+            onHide();
+            toggle(id, event.currentTarget.value);
+          }}
+        >
+          <option value="">{options.defaultOption}</option>
+          {Object.values(options.features[id]).map((option) => (
+            <option key={option}>{option}</option>
+          ))}
+        </select>
+      ),
     }));
 
   return (
     <WithTooltip
       placement="top"
       trigger="click"
-      closeOnClick
-      tooltip={({ onHide }) => <TooltipLinkList links={createLinks(onHide)} />}
+      tooltip={(props) => <TooltipList items={createItems(props)} />}
     >
-      <IconButton
-        key={TOOL_ID}
-        active={params.isActive}
-        title="Enable my addon"
-      >
-        <Icons icon="lightning" />
+      <IconButton key={TOOL_ID} title={options.title}>
+        <Icon />
       </IconButton>
     </WithTooltip>
   );
