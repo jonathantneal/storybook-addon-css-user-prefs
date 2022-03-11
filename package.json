@@ -1,14 +1,17 @@
 {
   "name": "storybook-addon-css-user-preferences",
   "version": "0.0.0",
-  "description": "Emulates CSS user preferences in Storybook",
+  "description": "Emulate CSS user preferences in Storybook",
   "keywords": [
     "storybook-addons",
     "conditions",
     "css",
     "emulate",
+    "emulates",
     "emulation",
     "media",
+    "query",
+    "queries",
     "preferences",
     "prefers-color-scheme",
     "prefers-contrast",
@@ -16,6 +19,7 @@
     "prefers-reduced-motion",
     "prefers-reduced-transparency",
     "prefs",
+    "toolbar",
     "user",
     "storybook-addons"
   ],
@@ -38,7 +42,6 @@
     "*.d.ts"
   ],
   "scripts": {
-    "postinstall": "node scripts/welcome.js",
     "clean": "rimraf ./dist",
     "buildBabel": "concurrently \"yarn buildBabel:cjs\" \"yarn buildBabel:esm\"",
     "buildBabel:cjs": "babel ./src -d ./dist/cjs --extensions \".js,.jsx,.ts,.tsx\" --out-file-extension .cjs",
@@ -97,7 +100,7 @@
     "access": "public"
   },
   "storybook": {
-    "displayName": "Emulates CSS user preferences in Storybook",
+    "displayName": "Emulate CSS user preferences in Storybook",
     "supportedFrameworks": [
       "react",
       "vue",
